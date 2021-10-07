@@ -7,21 +7,30 @@
 
 import Foundation
 
-let sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2,0]
-let current = [0,0,2,0]
+let sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2, 0,1,2,0]
+let current = [0,0,0,2,0,1,2,0] // TODO: 2,0,1,2,0 (0) vs 0,1,2,0 (0,1)
 
 let result = foresee(arr: sequence, elem: current)
-print(result)
+print("\n Prevision: \(result)")
 
 func foresee(arr: [Int], elem: [Int]) -> [Int:Double] {
-    var result: [Int:Double] = [:]
+    var absoluteResult: [Int:Int] = [:]
     var pastOccurences: [Int] = []
     var currentItem = elem
-    while(result == [:] && currentItem.count > 0) {
+    while(currentItem.count > 0) {
         pastOccurences = findPastOccurences(in: arr, of: currentItem)
-        print(pastOccurences, currentItem)
-        result = nextChance(arr: arr, pastOccurences: pastOccurences, elemLength: currentItem.count)
+        absoluteResult = nextChance(arr: arr, pastOccurences: pastOccurences, elemLength: currentItem.count)
         currentItem = Array(currentItem[1..<currentItem.count])
+    }
+    return calculateChance(absoluteValues: absoluteResult)
+}
+
+func calculateChance(absoluteValues: [Int:Int]) -> [Int:Double] {
+    let total = absoluteValues.reduce(0, {$0 + $1.value})
+    let unit = 1 / Double(total)
+    var result: [Int:Double] = [:]
+    for elem in absoluteValues {
+        result[elem.key] = Double(elem.value) * unit
     }
     return result
 }
@@ -39,18 +48,17 @@ func findPastOccurences(in arr: [Int], of elem: [Int]) -> [Int] {
     return result
 }
 
-func nextChance(arr: [Int], pastOccurences: [Int], elemLength: Int) -> [Int: Double] {
+func nextChance(arr: [Int], pastOccurences: [Int], elemLength: Int) -> [Int: Int] {
     if(pastOccurences.count == 0) {
         return [:]
     }
-    var result: [Int: Double] = [:]
-    let unit = 1.0 / Double(pastOccurences.count)
+    var result: [Int: Int] = [:]
 	pastOccurences.forEach { occurence in
         let nextElement = arr[occurence+elemLength]
         if(result[nextElement] != nil) {
-            result[nextElement]! += unit
+            result[nextElement]! += 1
         } else {
-            result[nextElement] = unit
+            result[nextElement] = 1
         }
 	}
     return result
