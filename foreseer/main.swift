@@ -14,11 +14,11 @@ print("\n Prevision: \(result)")
 
 func foresee<T>(arr: [T]) -> [T:Double] {
     var absoluteResult: [T:Int] = [:]
-    var currentItem = Array(arr.suffix(from: arr.count-1))
-    while(currentItem.count > 0) {
-        let pastOccurences = findPastOccurences(in: arr, of: currentItem)
-        absoluteResult = getNextElementOccurences(arr: arr, pastOccurences: pastOccurences, elemLength: currentItem.count)
-        currentItem = Array(currentItem[1..<currentItem.count])
+    var currentSubArray = Array(arr.suffix(from: arr.count-1))
+    while(currentSubArray.count > 0) {
+        let indexesOfPastOccurences = findIndexesOfPastOccurences(in: arr, of: currentSubArray)
+        absoluteResult = getNextElementOccurences(arr: arr, indexesOfPastOccurences: indexesOfPastOccurences, elemLength: currentSubArray.count)
+        currentSubArray = Array(currentSubArray[1..<currentSubArray.count])
     }
     return absoluteToRelativeValues(absoluteValues: absoluteResult)
 }
@@ -33,12 +33,12 @@ func absoluteToRelativeValues<T>(absoluteValues: [T:Int]) -> [T:Double] {
     return result
 }
 
-func findPastOccurences<T: Equatable>(in arr: [T], of elem: [T]) -> [Int] {
+func findIndexesOfPastOccurences<T: Equatable>(in arr: [T], of elem: [T]) -> [Int] {
     var currentIndex = 0
     var result: [Int] = []
     while(currentIndex <= arr.count - elem.count - 1) {
-        let currentItem = Array(arr[currentIndex..<(currentIndex+elem.count)])
-        if(currentItem == elem) {
+        let currentSubArray = Array(arr[currentIndex..<(currentIndex+elem.count)])
+        if(currentSubArray == elem) {
             result.append(currentIndex)
         }
         currentIndex += 1
@@ -46,12 +46,12 @@ func findPastOccurences<T: Equatable>(in arr: [T], of elem: [T]) -> [Int] {
     return result
 }
 
-func getNextElementOccurences<T>(arr: [T], pastOccurences: [Int], elemLength: Int) -> [T:Int] {
-    if(pastOccurences.count == 0) {
+func getNextElementOccurences<T>(arr: [T], indexesOfPastOccurences: [Int], elemLength: Int) -> [T:Int] {
+    if(indexesOfPastOccurences.count == 0) {
         return [:]
     }
     var result: [T:Int] = [:]
-	pastOccurences.forEach { occurence in
+	indexesOfPastOccurences.forEach { occurence in
         let nextElement = arr[occurence+elemLength]
         if(result[nextElement] != nil) {
             result[nextElement]! += 1
