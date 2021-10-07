@@ -12,8 +12,8 @@ let sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,
 let result = foresee(arr: sequence)
 print("\n Prevision: \(result)")
 
-func foresee(arr: [Int]) -> [Int:Double] {
-    var absoluteResult: [Int:Int] = [:]
+func foresee<T>(arr: [T]) -> [T:Double] {
+    var absoluteResult: [T:Int] = [:]
     var currentItem = Array(arr.suffix(from: arr.count-1))
     while(currentItem.count > 0) {
         let pastOccurences = findPastOccurences(in: arr, of: currentItem)
@@ -23,17 +23,17 @@ func foresee(arr: [Int]) -> [Int:Double] {
     return absoluteToRelativeValues(absoluteValues: absoluteResult)
 }
 
-func absoluteToRelativeValues(absoluteValues: [Int:Int]) -> [Int:Double] {
+func absoluteToRelativeValues<T>(absoluteValues: [T:Int]) -> [T:Double] {
     let total = absoluteValues.reduce(0, {$0 + $1.value})
     let unit = 1 / Double(total)
-    var result: [Int:Double] = [:]
+    var result: [T:Double] = [:]
     for elem in absoluteValues {
         result[elem.key] = Double(elem.value) * unit
     }
     return result
 }
 
-func findPastOccurences(in arr: [Int], of elem: [Int]) -> [Int] {
+func findPastOccurences<T: Equatable>(in arr: [T], of elem: [T]) -> [Int] {
     var currentIndex = 0
     var result: [Int] = []
     while(currentIndex <= arr.count - elem.count - 1) {
@@ -46,11 +46,11 @@ func findPastOccurences(in arr: [Int], of elem: [Int]) -> [Int] {
     return result
 }
 
-func getNextElementOccurences(arr: [Int], pastOccurences: [Int], elemLength: Int) -> [Int:Int] {
+func getNextElementOccurences<T>(arr: [T], pastOccurences: [Int], elemLength: Int) -> [T:Int] {
     if(pastOccurences.count == 0) {
         return [:]
     }
-    var result: [Int:Int] = [:]
+    var result: [T:Int] = [:]
 	pastOccurences.forEach { occurence in
         let nextElement = arr[occurence+elemLength]
         if(result[nextElement] != nil) {
