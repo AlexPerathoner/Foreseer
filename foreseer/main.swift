@@ -14,17 +14,16 @@ print("\n Prevision: \(result)")
 
 func foresee(arr: [Int]) -> [Int:Double] {
     var absoluteResult: [Int:Int] = [:]
-    var pastOccurences: [Int] = []
     var currentItem = Array(arr.suffix(from: arr.count-1))
     while(currentItem.count > 0) {
-        pastOccurences = findPastOccurences(in: arr, of: currentItem)
-        absoluteResult = nextChance(arr: arr, pastOccurences: pastOccurences, elemLength: currentItem.count)
+        let pastOccurences = findPastOccurences(in: arr, of: currentItem)
+        absoluteResult = getNextElementOccurences(arr: arr, pastOccurences: pastOccurences, elemLength: currentItem.count)
         currentItem = Array(currentItem[1..<currentItem.count])
     }
-    return calculateChance(absoluteValues: absoluteResult)
+    return absoluteToRelativeValues(absoluteValues: absoluteResult)
 }
 
-func calculateChance(absoluteValues: [Int:Int]) -> [Int:Double] {
+func absoluteToRelativeValues(absoluteValues: [Int:Int]) -> [Int:Double] {
     let total = absoluteValues.reduce(0, {$0 + $1.value})
     let unit = 1 / Double(total)
     var result: [Int:Double] = [:]
@@ -47,11 +46,11 @@ func findPastOccurences(in arr: [Int], of elem: [Int]) -> [Int] {
     return result
 }
 
-func nextChance(arr: [Int], pastOccurences: [Int], elemLength: Int) -> [Int: Int] {
+func getNextElementOccurences(arr: [Int], pastOccurences: [Int], elemLength: Int) -> [Int:Int] {
     if(pastOccurences.count == 0) {
         return [:]
     }
-    var result: [Int: Int] = [:]
+    var result: [Int:Int] = [:]
 	pastOccurences.forEach { occurence in
         let nextElement = arr[occurence+elemLength]
         if(result[nextElement] != nil) {
