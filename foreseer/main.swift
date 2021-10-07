@@ -15,7 +15,7 @@ print("\n Prevision: \(result)")
 func foresee(arr: [Int]) -> [Int:Double] {
     var absoluteResult: [Int:Int] = [:]
     var pastOccurences: [Int] = []
-    var currentItem = Array(arr.suffix(from: 8))
+    var currentItem = Array(arr.suffix(from: arr.count-1))
     while(currentItem.count > 0) {
         pastOccurences = findPastOccurences(in: arr, of: currentItem)
         absoluteResult = nextChance(arr: arr, pastOccurences: pastOccurences, elemLength: currentItem.count)
