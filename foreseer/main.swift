@@ -8,15 +8,14 @@
 import Foundation
 
 let sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2, 0,1,2,0]
-let current = [0,0,0,2,0,1,2,0] // TODO: 2,0,1,2,0 (0) vs 0,1,2,0 (0,1)
 
-let result = foresee(arr: sequence, elem: current)
+let result = foresee(arr: sequence)
 print("\n Prevision: \(result)")
 
-func foresee(arr: [Int], elem: [Int]) -> [Int:Double] {
+func foresee(arr: [Int]) -> [Int:Double] {
     var absoluteResult: [Int:Int] = [:]
     var pastOccurences: [Int] = []
-    var currentItem = elem
+    var currentItem = Array(arr.suffix(from: 8))
     while(currentItem.count > 0) {
         pastOccurences = findPastOccurences(in: arr, of: currentItem)
         absoluteResult = nextChance(arr: arr, pastOccurences: pastOccurences, elemLength: currentItem.count)
