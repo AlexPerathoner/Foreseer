@@ -9,19 +9,17 @@ import Foundation
 
 var sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2, 0,1,2,0]
 
-var result = foresee(arr: sequence)
+var result = foresee(arr: sequence, branches: 3)
 
 result.printTree()
 
 
 class ChancesTreeNode<T: Hashable & LosslessStringConvertible>: Hashable {
-    var isRoot = false
     var value: T?
     var chance: Double?
     var children: [ChancesTreeNode] = []
     
     init() {
-        isRoot = true
     }
 
     init(_ value: T, _ chance: Double) {
@@ -46,23 +44,45 @@ class ChancesTreeNode<T: Hashable & LosslessStringConvertible>: Hashable {
     }
 
     func printChildren(layer: Int, children: [ChancesTreeNode]) {
-        for child in children {
+        // TODO: beautify
+        for (index, child) in children.enumerated() {
             var str = ""
-            for _ in 0..<layer {
-                str += "  "
+            if(layer > 1) {
+                for _ in 0..<layer {
+                    str += " "
+                }
             }
-            print("\(str)\(child.value!) - \(child.chance!)")
+            if(layer > 0) {
+                if(children.count-1 == index) {
+                    str += "┗╸"
+                } else {
+                    str += "┣╸"
+                }                
+            }
+
+            print("\(str)\(child.value!) - \(String(format: "%.2f", child.chance!))")
             printChildren(layer: layer+1, children: child.children)
         }
     }
 
     func printTree() {
-        if(!isRoot) {
-            print("\(value!) - \(chance!)")
-        }
         printChildren(layer: 0, children: children)
     }
 
+}
+
+func foresee<T:Hashable>(arr: [T], branches: Int) -> ChancesTreeNode<T> {
+    let root = ChancesTreeNode<T>()
+    root.add(foresee(arr: arr).children)
+    if(branches > 1) {
+        for elem in root.children {
+            var newArr = arr
+            newArr.append(elem.value!)
+            let innerResult = foresee(arr: newArr, branches: branches-1)
+            elem.add(innerResult.children)
+        }
+    }
+    return root
 }
 
 func foresee<T>(arr: [T]) -> ChancesTreeNode<T> {
