@@ -7,12 +7,65 @@
 
 import Foundation
 
-let sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2, 0,1,2,0]
+var sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2, 0,1,2,0]
 
-let result = foresee(arr: sequence)
-print("\n Prevision: \(result)")
+var result = foresee(arr: sequence)
 
-func foresee<T>(arr: [T]) -> [T:Double] {
+result.printTree()
+
+
+class ChancesTreeNode<T: Hashable & LosslessStringConvertible>: Hashable {
+    var isRoot = false
+    var value: T?
+    var chance: Double?
+    var children: [ChancesTreeNode] = []
+    
+    init() {
+        isRoot = true
+    }
+
+    init(_ value: T, _ chance: Double) {
+        self.value = value
+        self.chance = chance
+    }
+
+    func add(_ child: ChancesTreeNode) {
+        children.append(child)
+    }
+    func add(_ children: [ChancesTreeNode]) {
+        self.children.append(contentsOf: children)
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(value)
+        hasher.combine(children)
+    }
+
+    static func ==(lhs: ChancesTreeNode, rhs: ChancesTreeNode) -> Bool {
+        return lhs.value == rhs.value && lhs.chance == rhs.chance
+    }
+
+    func printChildren(layer: Int, children: [ChancesTreeNode]) {
+        for child in children {
+            var str = ""
+            for _ in 0..<layer {
+                str += "  "
+            }
+            print("\(str)\(child.value!) - \(child.chance!)")
+            printChildren(layer: layer+1, children: child.children)
+        }
+    }
+
+    func printTree() {
+        if(!isRoot) {
+            print("\(value!) - \(chance!)")
+        }
+        printChildren(layer: 0, children: children)
+    }
+
+}
+
+func foresee<T>(arr: [T]) -> ChancesTreeNode<T> {
     var absoluteResult: [T:Int] = [:]
     var currentSubArray = Array(arr.suffix(from: arr.count-1))
     while(currentSubArray.count > 0) {
@@ -23,14 +76,14 @@ func foresee<T>(arr: [T]) -> [T:Double] {
     return absoluteToRelativeValues(absoluteValues: absoluteResult)
 }
 
-func absoluteToRelativeValues<T>(absoluteValues: [T:Int]) -> [T:Double] {
+func absoluteToRelativeValues<T>(absoluteValues: [T:Int]) -> ChancesTreeNode<T> {
     let total = absoluteValues.reduce(0, {$0 + $1.value})
     let unit = 1 / Double(total)
-    var result: [T:Double] = [:]
+    let root = ChancesTreeNode<T>()
     for elem in absoluteValues {
-        result[elem.key] = Double(elem.value) * unit
+        root.add(ChancesTreeNode(elem.key, Double(elem.value) * unit))
     }
-    return result
+    return root
 }
 
 func findIndexesOfPastOccurences<T: Equatable>(in arr: [T], of elem: [T]) -> [Int] {
