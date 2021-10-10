@@ -7,11 +7,13 @@
 
 import Foundation
 
-var sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2, 0,1,2,0]
+var sequence = [2,0,2,0,0,2,0,0,2,0,0,2,0,2,1,2,0,2,0,0,1,2,0,1,2,2,0,1,2,0,0,0,2,2,0,2,0,0,2,0,0,0,0,2,0,0,2,1,0,0,0,2,0,0,2,0,2,2,0,1,2,2,0,0,0,2,1,0,2,0,0,0,0,1,2,2,0,0,2, 0,1,2,0,1,2,0,0,0,2]
 
-var result = foresee(arr: sequence, branches: 3)
+var result = foresee(arr: sequence, branches: 5)
 
 result.printTree()
+let likelyBranch = result.getLikelyBranch()
+print(likelyBranch)
 
 
 class ChancesTreeNode<T: Hashable & LosslessStringConvertible>: Hashable {
@@ -67,6 +69,31 @@ class ChancesTreeNode<T: Hashable & LosslessStringConvertible>: Hashable {
 
     func printTree() {
         printChildren(layer: 0, children: children)
+    }
+
+    func getLikelyBranch() -> [T] {
+        getLikelyBranch(tree: self)
+    }
+    // TODO: get most likely path
+    func getLikelyBranch(tree: ChancesTreeNode) -> [T] {
+        var path: [T] = []
+        var tempTree = tree
+        repeat {
+            let likely = getLikelyBranch(children: tempTree.children)
+            path.append(likely.value!)
+            tempTree = likely
+        } while(tempTree.children.count > 0)
+        return path
+    }
+
+    func getLikelyBranch(children: [ChancesTreeNode]) -> ChancesTreeNode {
+        var likely = children.first!
+        for i in children {
+            if(i.chance! > likely.chance!) {
+                likely = i
+            }
+        }
+        return likely
     }
 
 }
