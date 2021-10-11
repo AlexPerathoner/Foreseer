@@ -1,5 +1,5 @@
-fswatch -0 foreseer | while read -d "" event
+fswatch -0 . | while read -d "" event
 do
     echo "\n Files changed. Running..."
-    swift foreseer/main.swift
+    swift main.swift
 done
