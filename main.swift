@@ -74,7 +74,7 @@ class ChancesTreeNode<T: Hashable & LosslessStringConvertible>: Hashable {
     func getLikelyBranch() -> [T] {
         getLikelyBranch(tree: self)
     }
-    // TODO: get most likely path
+
     func getLikelyBranch(tree: ChancesTreeNode) -> [T] {
         var path: [T] = []
         var tempTree = tree
