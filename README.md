@@ -32,8 +32,21 @@ Let's see look at some examples:
 ## How to use
 1. Open `main.swift`
 2. Edit the sequence
-3. Choose how many items you want to predict
+3. Choose how many items you want to predict by changing the `branches` parameter of `foresee(::)`
 4. Open a terminal and run `swift main.swift`
+
+#### Example
+
+Using this input `1,1,0,0,1` the output will look like:
+
+```
+1 - 0.50
+┣╸0 - 0.33
+┗╸1 - 0.67
+0 - 0.50
+┣╸0 - 0.50
+┗╸1 - 0.50
+```
 
 ## License
 
